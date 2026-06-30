@@ -232,26 +232,47 @@ function renderizarApp() {
  * * @returns {string} Bloque literal de plantillas HTML.
  */
 function VistaBienvenida() {
+
+    const modulos = [
+        { cat: 'saludos', numero: '01', titulo: 'Saludos', detalle: 'Cortesía social y primeros contactos', cantidad: DICCIONARIO_LESCO.saludos.length },
+        { cat: 'necesidades', numero: '02', titulo: 'Necesidades', detalle: 'Señas de asistencia y uso diario', cantidad: DICCIONARIO_LESCO.necesidades.length },
+        { cat: 'dias', numero: '03', titulo: 'Días de la semana', detalle: 'Secuencia cronológica dactilológica', cantidad: DICCIONARIO_LESCO.dias.length },
+    ];
+
+    const tarjetas = modulos.map(m => `
+        <button onclick="iniciarModulo('${m.cat}')" class="group relative text-left p-6 bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 rounded-2xl transition-all duration-300 hover:-translate-y-1 cursor-pointer">
+            <span class="font-mono text-xs text-papaya-500 tracking-widest">${m.numero}</span>
+            <h3 class="font-display text-xl font-semibold text-white mt-3 mb-1">${m.titulo}</h3>
+            <p class="text-caribe-100/70 text-sm leading-relaxed mb-4">${m.detalle}</p>
+            <span class="inline-flex items-center gap-1.5 text-xs font-semibold text-papaya-500 eyebrow uppercase">
+                ${m.cantidad} señas
+                <span class="transition-transform group-hover:translate-x-1">→</span>
+            </span>
+        </button>
+    `).join('');
+
     return `
-        <div class="fixed inset-0 bg-gradient-to-br from-indigo-900 via-slate-900 to-blue-900 z-50 flex items-center justify-center p-4">
-            <div class="max-w-2xl text-center bg-white/10 backdrop-blur-md p-8 md:p-12 rounded-2xl shadow-2xl border border-white/20 text-white">
-                <h1 class="text-3xl md:text-5xl font-black tracking-tight mb-4 bg-gradient-to-r from-blue-400 to-teal-300 bg-clip-text text-transparent">
-                    Bienvenido a la Guía de LESCO
-                </h1>
-                <p class="text-slate-300 text-base md:text-lg mb-8 leading-relaxed">
-                    Plataforma interactiva diseñada para el aprendizaje correcto de la Lengua de Señas Costarricense.
-                </p>
-                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <button onclick="iniciarModulo('saludos')" class="flex flex-col items-center justify-center p-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl font-semibold transition-all transform hover:-translate-y-1 cursor-pointer">
-                        <span class="text-2xl mb-2">👋</span> Saludos
-                    </button>
-                    <button onclick="iniciarModulo('necesidades')" class="flex flex-col items-center justify-center p-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl font-semibold transition-all transform hover:-translate-y-1 cursor-pointer">
-                        <span class="text-2xl mb-2">🚨</span> Necesidades
-                    </button>
-                    <button onclick="iniciarModulo('dias')" class="flex flex-col items-center justify-center p-4 bg-white/10 hover:bg-white/20 border border-white/10 rounded-xl font-semibold transition-all transform hover:-translate-y-1 cursor-pointer">
-                        <span class="text-2xl mb-2">📅</span> Días de la Semana
-                    </button>
+        <div class="fixed inset-0 bg-caribe-950 z-50 flex items-center justify-center p-4 overflow-y-auto">
+            <div class="absolute inset-0 opacity-[0.07]" style="background-image: radial-gradient(circle at 1px 1px, white 1px, transparent 0); background-size: 28px 28px;"></div>
+
+            <div class="relative max-w-3xl w-full py-12">
+                <div class="text-center mb-12">
+                    <span class="inline-block font-mono text-xs text-papaya-500 eyebrow uppercase mb-5 border border-papaya-500/40 rounded-full px-3 py-1">
+                        Guía visual · Lengua de Señas Costarricense
+                    </span>
+                    <h1 class="font-display text-4xl md:text-6xl font-semibold tracking-tight text-white leading-[1.05] mb-5">
+                        Aprenda LESCO mano a mano
+                    </h1>
+                    <p class="text-caribe-100/70 text-base md:text-lg max-w-xl mx-auto leading-relaxed">
+                        Video de referencia, ejecución técnica y contexto de uso para cada seña, organizados por módulo de aprendizaje.
+                    </p>
                 </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    ${tarjetas}
+                </div>
+
+                <p class="text-center text-caribe-100/40 text-xs font-mono mt-10 eyebrow uppercase">Costa Rica · Material de referencia HandsOn LESCO</p>
             </div>
         </div>
     `;
@@ -270,7 +291,7 @@ function VistaPrincipal() {
 
     // Generar botones de categorías
     const botonesCategorias = Object.keys(DICCIONARIO_LESCO).map(cat => `
-        <button onclick="cambiarCategoria('${cat}')" class="px-4 py-2 text-sm font-medium rounded-lg transition-colors cursor-pointer capitalize ${estado.categoriaActual === cat ? 'bg-indigo-600 text-white shadow-sm' : 'text-slate-600 hover:bg-slate-100'
+        <button onclick="cambiarCategoria('${cat}')" class="px-4 py-2 text-sm font-semibold rounded-full transition-colors cursor-pointer capitalize border ${estado.categoriaActual === cat ? 'bg-caribe-900 text-white border-caribe-900' : 'text-tinta/60 border-arena-200 hover:border-caribe-900/40 hover:text-tinta'
         }">
             ${cat}
         </button>
@@ -280,15 +301,16 @@ function VistaPrincipal() {
     let contenidoLateral = '';
     if (estado.cargando) {
         contenidoLateral = `
-            <div class="flex items-center gap-2 text-sm text-slate-500 animate-pulse p-4">
-                <span class="inline-block w-4 h-4 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin"></span>
+            <div class="flex items-center gap-2 text-sm text-tinta/50 animate-pulse p-4">
+                <span class="inline-block w-4 h-4 border-2 border-caribe-900 border-t-transparent rounded-full animate-spin"></span>
                 Cargando...
             </div>`;
     } else {
-        contenidoLateral = listaPalabras.map(item => `
-            <button onclick="seleccionarPalabra('${item.id}')" class="w-full text-left px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 cursor-pointer ${estado.palabraActiva?.id === item.id ? 'bg-indigo-600 text-white font-semibold shadow-sm' : 'text-slate-700 hover:bg-slate-100'
+        contenidoLateral = listaPalabras.map((item, idx) => `
+            <button onclick="seleccionarPalabra('${item.id}')" class="w-full flex items-baseline gap-3 text-left px-3 py-3 rounded-lg text-sm transition-all duration-200 cursor-pointer ${estado.palabraActiva?.id === item.id ? 'bg-caribe-900 text-white shadow-sm' : 'text-tinta/80 hover:bg-arena-100'
             }">
-                ${item.palabra}
+                <span class="font-mono text-[11px] ${estado.palabraActiva?.id === item.id ? 'text-papaya-500' : 'text-tinta/35'}">${String(idx + 1).padStart(2, '0')}</span>
+                <span class="font-medium">${item.palabra}</span>
             </button>
         `).join('');
     }
@@ -298,66 +320,68 @@ function VistaPrincipal() {
     if (estado.palabraActiva) {
         contenidoCentral = `
             <div>
-                <div class="flex items-start justify-between border-b border-slate-100 pb-4 mb-4">
+                <div class="flex items-start justify-between border-b border-arena-200 pb-4 mb-5">
                     <div>
-                        <h2 class="text-2xl md:text-3xl font-extrabold text-slate-950">${estado.palabraActiva.palabra}</h2>
-                        <p class="text-sm text-slate-500 mt-1">Siga las pautas de accesibilidad y ejecución técnica del LESCO.</p>
+                        <span class="font-mono text-[11px] text-papaya-600 eyebrow uppercase">${estado.categoriaActual}</span>
+                        <h2 class="font-display text-3xl md:text-4xl font-semibold text-tinta mt-1">${estado.palabraActiva.palabra}</h2>
                     </div>
-                    <span class="text-xs font-bold uppercase tracking-widest px-2.5 py-1 bg-teal-100 text-teal-800 rounded-full capitalize">
-                        ${estado.categoriaActual}
-                    </span>
                 </div>
                 
                 <div class="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
-                    <div class="lg:col-span-2 bg-slate-900 rounded-xl overflow-hidden aspect-square border border-slate-200 flex items-center justify-center relative">
-                        <video id="videoPlayer" controls preload="auto" poster="${estado.palabraActiva.poster}" class="w-full h-full object-cover">
-                            <source src="${estado.palabraActiva.video}" type="video/mp4" />
-                            Su navegador no soporta reproducción de video HTML5.
-                        </video>
+                    <div class="lg:col-span-2 relative">
+                        <div class="bg-caribe-950 rounded-xl overflow-hidden aspect-square flex items-center justify-center relative">
+                            <video id="videoPlayer" controls preload="auto" poster="${estado.palabraActiva.poster}" class="w-full h-full object-cover">
+                                <source src="${estado.palabraActiva.video}" type="video/mp4" />
+                                Su navegador no soporta reproducción de video HTML5.
+                            </video>
+                        </div>
+                        <span class="absolute -top-1.5 -left-1.5 w-5 h-5 border-t-2 border-l-2 border-papaya-500 rounded-tl-md pointer-events-none"></span>
+                        <span class="absolute -bottom-1.5 -right-1.5 w-5 h-5 border-b-2 border-r-2 border-papaya-500 rounded-br-md pointer-events-none"></span>
                     </div>
 
                     <div class="lg:col-span-3 space-y-4">
-                        <div class="bg-slate-50 p-4 rounded-xl border border-slate-100">
-                            <h3 class="text-sm font-bold text-slate-900 uppercase tracking-wider mb-1">Ejecución del Movimiento</h3>
-                            <p class="text-slate-600 text-sm leading-relaxed">${estado.palabraActiva.descripcion}</p>
+                        <div class="bg-white p-4 rounded-xl border border-arena-200 border-l-4 border-l-caribe-900">
+                            <h3 class="text-xs font-bold text-caribe-900 eyebrow uppercase mb-1.5">Ejecución del movimiento</h3>
+                            <p class="text-tinta/75 text-sm leading-relaxed">${estado.palabraActiva.descripcion}</p>
                         </div>
                         
-                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-100">
-                            <h3 class="text-sm font-bold text-amber-900 uppercase tracking-wider mb-1">Notas de Contexto LESCO</h3>
-                            <p class="text-amber-800 text-sm leading-relaxed">${estado.palabraActiva.notas}</p>
+                        <div class="bg-papaya-100/50 p-4 rounded-xl border border-papaya-100">
+                            <h3 class="text-xs font-bold text-papaya-600 eyebrow uppercase mb-1.5">Notas de contexto LESCO</h3>
+                            <p class="text-tinta/75 text-sm leading-relaxed">${estado.palabraActiva.notas}</p>
                         </div>
                     </div>
                 </div>
             </div>
         `;
     } else {
-        contenidoCentral = `<div class="text-center py-12 text-slate-400 italic">Seleccione una palabra del glosario.</div>`;
+        contenidoCentral = `<div class="text-center py-12 text-tinta/40 italic">Seleccione una palabra del glosario.</div>`;
     }
 
     return `
         <div class="min-h-screen flex flex-col">
-            <header class="bg-white border-b border-slate-200 sticky top-0 z-40 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4 shadow-sm">
-                <h2 class="text-xl font-bold text-indigo-900 flex items-center gap-2">
-                    <span class="text-2xl">🇨🇷</span> Módulos LESCO
+            <header class="bg-white border-b border-arena-200 sticky top-0 z-40 px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+                <h2 class="font-display text-xl font-semibold text-caribe-900 flex items-center gap-2.5">
+                    <span class="w-7 h-7 rounded-md bg-caribe-900 text-white text-xs font-mono flex items-center justify-center">CR</span>
+                    Módulos LESCO
                 </h2>
                 <div class="flex flex-wrap gap-2">${botonesCategorias}</div>
             </header>
 
             <main class="flex-1 grid grid-cols-1 md:grid-cols-4 max-w-7xl w-full mx-auto p-4 md:p-6 gap-6">
-                <aside class="bg-white rounded-xl border border-slate-200 p-4 space-y-2 h-[calc(100vh-140px)] overflow-y-auto shadow-sm">
-                    <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Glosario disponible</p>
+                <aside class="bg-white rounded-xl border border-arena-200 p-3 space-y-1 h-[calc(100vh-140px)] overflow-y-auto">
+                    <p class="text-xs font-semibold text-tinta/40 eyebrow uppercase mb-2 px-3 pt-2">Glosario disponible</p>
                     ${contenidoLateral}
                 </aside>
 
-                <section class="md:col-span-3 bg-white rounded-xl border border-slate-200 p-6 shadow-sm flex flex-col justify-between h-[calc(100vh-140px)] overflow-y-auto">
+                <section class="md:col-span-3 bg-white rounded-xl border border-arena-200 p-6 flex flex-col justify-between h-[calc(100vh-140px)] overflow-y-auto">
                     ${contenidoCentral}
                     
-                    <div class="border-t border-slate-100 pt-4 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
-                        <button onclick="reproducirAudio()" class="w-full sm:w-auto px-5 py-2.5 bg-slate-900 text-white rounded-lg font-medium text-sm hover:bg-slate-800 transition-colors shadow-sm flex items-center justify-center gap-2 cursor-pointer">
-                            🔊 Escuchar Pronunciación
+                    <div class="border-t border-arena-200 pt-4 mt-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+                        <button onclick="reproducirAudio()" class="w-full sm:w-auto px-5 py-2.5 bg-caribe-900 text-white rounded-lg font-semibold text-sm hover:bg-caribe-800 transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                            🔊 Escuchar pronunciación
                         </button>
-                        <button onclick="volverBienvenida()" class="w-full sm:w-auto px-5 py-2.5 text-slate-600 font-medium text-sm hover:text-slate-900 transition-colors flex items-center justify-center gap-1 cursor-pointer">
-                            🏠 Volver a la Bienvenida
+                        <button onclick="volverBienvenida()" class="w-full sm:w-auto px-5 py-2.5 text-tinta/60 font-medium text-sm hover:text-tinta transition-colors flex items-center justify-center gap-1 cursor-pointer">
+                            ← Volver a la bienvenida
                         </button>
                     </div>
                 </section>
